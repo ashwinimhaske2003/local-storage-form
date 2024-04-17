@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  background-image: url('hello.jpg'); /* Replace 'hello.jpg' with your image path */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #661e73;
+    color: white;
+  }
+
+  tbody tr:hover {
+    background-color: #f2f2f2;
+  }
+
+  button {
+    display: block;
+    margin: 5px auto; /* Changed margin to give space between buttons */
+    padding: 10px 20px;
+    background-color: #4b3758;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #463058;
+  }
+
+  form {
+    display: none;
+    margin: 20px auto;
+    width: 80%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: bold;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .form-group button {
+    background-color: #4b3758;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+</head>
+<body>
+  <h2>Dashboard</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile no.</th>
+        <th>Username</th>
+        <th>Action</th> <!-- New column for update button -->
+      </tr>
+    </thead>
+    <tbody id="entriesTable">
+      <!-- Entries will be added dynamically here -->
+    </tbody>
+  </table>
+
+  <form id="updateForm">
+    <div class="form-group">
+      <label for="updateName">Name:</label>
+      <input type="text" id="updateName" name="updateName">
+    </div>
+    <div class="form-group">
+      <label for="updateEmail">Email:</label>
+      <input type="email" id="updateEmail" name="updateEmail">
+    </div>
+    <div class="form-group">
+      <label for="updateMobile">Mobile no.:</label>
+      <input type="text" id="updateMobile" name="updateMobile">
+    </div>
+    <div class="form-group">
+      <label for="updateUsername">Username:</label>
+      <input type="text" id="updateUsername" name="updateUsername">
+    </div>
+    <button type="button" onclick="saveChanges()">Save Changes</button>
+  </form>
+
+  <script>
+    var selectedIndex = null; // Variable to store the index of the selected row
+
+    function clearData() {
+      // Remove all rows from the table
+      var tableBody = document.getElementById('entriesTable');
+      tableBody.innerHTML = '';
+      
+      // Clear localStorage
+      localStorage.removeItem('allTimeUserData');
+    }
+
+    // Retrieve all-time user data from localStorage
+    var allTimeUserData = JSON.parse(localStorage.getItem('allTimeUserData'));
+
+    // Display all-time user data in the table
+    if (allTimeUserData) {
+      for (var i = 0; i < allTimeUserData.length; i++) {
+        var row = document.createElement('tr');
+        row.innerHTML = `<td>${allTimeUserData[i].id}</td><td>${allTimeUserData[i].name}</td><td>${allTimeUserData[i].email}</td><td>${allTimeUserData[i].mobile}</td><td>${allTimeUserData[i].username}</td><td><button onclick="openUpdateForm(${i})">Update</button><button onclick="deleteRow(${i})">Delete</button></td>`;
+        document.getElementById('entriesTable').appendChild(row);
+      }
+    }
+
+    // Function to open update form with existing data
+    function openUpdateForm(index) {
+      selectedIndex = index;
+      var userData = allTimeUserData[index];
+      document.getElementById('updateName').value = userData.name;
+      document.getElementById('updateEmail').value = userData.email;
+      document.getElementById('updateMobile').value = userData.mobile;
+      document.getElementById('updateUsername').value = userData.username;
+      document.getElementById('updateForm').style.display = 'block';
+    }
+
+    // Function to delete row
+    function deleteRow(index) {
+      var allTimeUserData = JSON.parse(localStorage.getItem('allTimeUserData'));
+      allTimeUserData.splice(index, 1); // Remove the element at the specified index
+      localStorage.setItem('allTimeUserData', JSON.stringify(allTimeUserData)); // Update the data in localStorage
+      location.reload(); // Reload the page to reflect the changes
+    }
+
+    // Function to save changes
+    function saveChanges() {
+      var updatedUserData = {
+        name: document.getElementById('updateName').value,
+        email: document.getElementById('updateEmail').value,
+        mobile: document.getElementById('updateMobile').value,
+        username: document.getElementById('updateUsername').value
+      };
+      allTimeUserData[selectedIndex] = updatedUserData;
+      localStorage.setItem('allTimeUserData', JSON.stringify(allTimeUserData));
+      location.reload();
+    }
+  </script>
+</body>
+</html>
